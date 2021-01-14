@@ -15,7 +15,8 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}:{}/{}".format('postgres','123456@localhost:5432', self.database_name)
+        self.database_path = "postgres://{}:{}/{}".format(
+            'postgres', '123456@localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -24,15 +25,17 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         """Executed after reach test"""
         pass
 
     """
     TODO
-    Write at least one test for each test for successful operation and for expected errors.
+    Write at least one test for each test
+    for successful operation and for expected errors.
     """
+
     def test_get_categories(self):
         result = self.client().get('/categories')
         data = json.loads(result.data)
@@ -41,14 +44,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['categories'])
 
-
     def test_get_categories_404(self):
         result = self.client().get('/categories/123654')
         data = json.loads(result.data)
         print(result)
         self.assertEqual(result.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertTrue(data['message'],'not found')
+        self.assertTrue(data['message'], 'not found')
 
     def test_get_questions(self):
         result = self.client().get('/questions')
@@ -77,13 +79,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'resource not found')
 
     def test_delete_question(self):
-        result = self.client().delete('/questions/12')
+        result = self.client().delete('/questions/22')
         data = json.loads(result.data)
         print(result)
         self.assertEqual(result.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted'], 12)
-
+        self.assertEqual(data['deleted'], 22)
 
     def test_delete_question_invalid_404(self):
         result = self.client().delete('/questions/10000')
@@ -100,14 +101,14 @@ class TriviaTestCase(unittest.TestCase):
             'difficulty': 1,
             'category': 6
         }
-        result = self.client().post('/questions',json=test_entry)
+        result = self.client().post('/questions', json=test_entry)
         data = json.loads(result.data)
         print(result)
         self.assertEqual(result.status_code, 200)
         self.assertEqual(data['success'], True)
 
     def test_add_question_invalid(self):
-        result = self.client().post('/questions',json={})
+        result = self.client().post('/questions', json={})
         data = json.loads(result.data)
         print(result)
         self.assertEqual(result.status_code, 400)
@@ -133,7 +134,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_search_question(self):
         search_word = {
-            'search_term': 'what',
+            'searchTerm': 'what',
         }
 
         result = self.client().post('/questions/search', json=search_word)
@@ -153,7 +154,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'unprocessable entity')
 
     def test_quiz(self):
-        test_data = {'quiz_category': {'type': 'Art', 'id': 2},'previous_questions': []}
+        test_data = {
+            'quiz_category': {
+                'type': 'Art',
+                'id': 2},
+            'previous_questions': []}
 
         result = self.client().post('/quizzes', json=test_data)
         data = json.loads(result.data)
@@ -171,7 +176,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(result.status_code, 400)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], "bad request")
-
 
 
 if __name__ == "__main__":
